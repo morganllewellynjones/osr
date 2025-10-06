@@ -15,5 +15,7 @@ CREATE TABLE IF NOT exists characters.player(
 
     -- derived statistics
     hit_points INTEGER NOT NULL,
-    armor_class INTEGER NOT NULL
+    armor_class INTEGER NOT NULL,
+
+    UNIQUE (profile_id, character_name)
 );

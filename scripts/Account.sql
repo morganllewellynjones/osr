@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS account.roles(
 
 CREATE TABLE IF NOT EXISTS account.profile(
     profile_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
-    username TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role VARCHAR(255) REFERENCES account.roles (role),
     created_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
