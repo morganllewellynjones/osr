@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping("/account")
 public class AccountController {
 
-    private final ProfileRepository profileRepository;
+    private final AccountRepository accountRepository;
 
-    AccountController(ProfileRepository profileRepository) {
-	this.profileRepository = profileRepository;
+    AccountController(AccountRepository accountRepository) {
+	this.accountRepository = accountRepository;
     }
 
     @GetMapping("/findAllProfiles")
-    public ResponseEntity<List<Profile>> findAllProfile() {
-	return ResponseEntity.ok().body(profileRepository.findAll());
+    public ResponseEntity<List<Account>> findAllAccount() {
+	return ResponseEntity.ok().body(accountRepository.findAll());
     }
     
     @PostMapping("/create")

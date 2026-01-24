@@ -1,4 +1,4 @@
-package com.osr.account; 
+package com.osr.account;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,24 +9,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 @Entity
-public class Profile {
+public class Character {
 
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
-    public UUID profile_id;
-
-    @Column(nullable = false, unique = true)
-    public String username;
+    public UUID id;
 
     @Column(nullable = false)
-    public String password;
-    
+    public UUID profileId;
+
     @Column(nullable = false)
-    public String role;
+    public String name;
 
     public String toString() {
-	return String.format("Profile(username=%1$s, password=%2$s, role=%3$s)", username, password, role);
+	return String.format("Character(name=%1$s, profile_id=%2$s)", name, profileId);
     }
 }
 
-interface ProfileRepository extends JpaRepository<Profile, UUID> {}
+interface CharacterRepository extends JpaRepository<Account, UUID> {}
