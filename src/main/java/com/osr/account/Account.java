@@ -1,6 +1,7 @@
 package com.osr.account; 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +11,10 @@ import jakarta.persistence.OneToMany;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
+@Table(schema = "account")
 public class Account {
 
     @Id
@@ -27,14 +30,15 @@ public class Account {
     @Column(nullable = false)
     public String role;
 
-    @OneToMany(mappedBy="profileId")
-    public List<Character> characters;
+    @OneToMany(mappedBy="account")
+    public List<Character> characters = new ArrayList<Character>();
 
     public String toString() {
-	return String.format("Profile(username=%1$s, password=%2$s, role=%3$s)", username, password, role);
+	return String.format("Profile(id=%1$s, username=%2$s, password=%3$s, role=%4$s)", id, username, password, role);
     }
 }
 
 interface AccountRepository extends JpaRepository<Account, UUID> {
-    //Account findOneByUsername();
+    Account findByUsername(String username);
+    List<Account> findAllByRole(String role);
 }
