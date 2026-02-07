@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Entity
-@Table(schema = "account")
+@Table
 public class Account {
 
     @Id
@@ -35,6 +35,17 @@ public class Account {
 
     public String toString() {
 	return String.format("Profile(id=%1$s, username=%2$s, password=%3$s, role=%4$s)", id, username, password, role);
+    }
+
+    UUID getId() {return this.id;}
+    String getUsername() {return this.username;}
+
+    public Account() {}
+
+    public Account(String username, String password, String role) {
+	this.username = username;
+	this.password = password;
+	this.role = role;
     }
 }
 

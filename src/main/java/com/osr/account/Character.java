@@ -28,6 +28,17 @@ public class Character {
     public String toString() {
 	return String.format("Character(id=%1$s, name=%2$s, account_id=%3$s)", id, name, account.id);
     }
+
+    Account getAccount() { return this.account; }
+
+    public Character() {}
+    
+    public Character(String name, Account account) {
+	this.name = name;
+	this.account = account;
+    }
 }
 
-interface CharacterRepository extends JpaRepository<Character, UUID> {}
+interface CharacterRepository extends JpaRepository<Character, UUID> {
+    Character findByName(String name);
+}
