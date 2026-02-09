@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType; 
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class Account {
     @Column(nullable = false)
     public String role;
 
-    @OneToMany(mappedBy="account")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="account")
     public List<Character> characters = new ArrayList<Character>();
 
     public String toString() {
@@ -46,6 +47,14 @@ public class Account {
 	this.username = username;
 	this.password = password;
 	this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+	if ( this == o ) { return true; }
+	if (o == null || getClass() != o.getClass()) { return false; }
+	Account account = (Account) o;
+	return username != null ? username.equals(account.username) : account.username == null;
     }
 }
 

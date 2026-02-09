@@ -19,7 +19,7 @@ public class Character {
     public UUID id;
 
     @JoinColumn(nullable = false, name="accountId")
-    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @ManyToOne(fetch=FetchType.EAGER, optional=false)
     public Account account;
 
     @Column(nullable = false)
