@@ -7,7 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.FetchType; 
+import jakarta.persistence.FetchType;
+import org.hibernate.annotations.NaturalId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
@@ -22,7 +23,8 @@ public class Account {
     @GeneratedValue(strategy=GenerationType.UUID)
     public UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
+    @NaturalId
     public String username;
 
     @Column(nullable = false)
@@ -31,19 +33,23 @@ public class Account {
     @Column(nullable = false)
     public String role;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy="account")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="account")
     public List<Character> characters = new ArrayList<Character>();
 
     public String toString() {
 	return String.format("Profile(id=%1$s, username=%2$s, password=%3$s, role=%4$s)", id, username, password, role);
     }
 
-    UUID getId() {return this.id;}
-    String getUsername() {return this.username;}
-
     public Account() {}
 
     public Account(String username, String password, String role) {
+	this.username = username;
+	this.password = password;
+	this.role = role;
+    }
+    
+    public Account(UUID id, String username, String password, String role) {
+	this.id = id;
 	this.username = username;
 	this.password = password;
 	this.role = role;
