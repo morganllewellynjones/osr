@@ -49,7 +49,7 @@ class AccountTests {
 	    setupData();
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
 	void setupData() {
 	    Account a = new Account("donkey_kong", "snowflake", "player");
 	    Character arthur = new Character("arthur", a);
@@ -72,45 +72,15 @@ class AccountTests {
 
 	@Test
 	@Transactional
-	@DisplayName("")
+	@DisplayName("Test to see that a newly created account is equal to an existing persistent account with the same name.")
 	void testEquality() {
 	    Account a = new Account("donkey_kong", "new_password", "new_role");
 	    Account b = accountRepository.findByUsername("donkey_kong");
-	    logger.info("Does a = b?");
+	    logger.info(String.format("Does a = b? %b", a.equals(b)));
 	    assert(a.equals(b) == true);
 
 	    //accountRepository.saveAndFlush(a);
 	    //assert(b.password == "new_password");
-	}
-
-	@Test
-	@Transactional
-	@DisplayName("Merge requires no previously inserted object")
-	void testMergeNew() {
-	    var newAccountName = "bowser_boy";
-	    var a = new Account(newAccountName, "new_password", "new_role");
-	    logger.info(String.format("Merging %s", newAccountName));
-	    entityManager.merge(a);
-	    logger.info(String.format("Fetching %s", newAccountName));
-	    var b = accountRepository.findByUsername(newAccountName);
-	    assert(b.role == "new_role");
-	}
-
-	@Test
-	@Transactional
-	@DisplayName("Merge on a persistent object updates state in db")
-	void testMergeDirty() {
-	    logger.info("Getting base account...");
-	    var a = accountRepository.findByUsername("donkey_kong");
-	    logger.info("Updating account details...");
-	    a.password = "new_password";
-	    a.role = "new_role";
-	    logger.info("Merging data...");
-	    logger.info("Fetching new account...");
-	    var b = accountRepository.findByUsername("donkey_kong");
-	    assert(b.password == "new_password");
-	    assert(b.role == "new_role");
-	    logger.info(b.toString());
 	}
 
 	@Test
@@ -120,12 +90,14 @@ class AccountTests {
 	    Account a = accountRepository.findByUsername("donkey_kong");
 	    a.password = "new_password";
 	    a.role = "new_role";
+
+	    //It seems not. If you explicitly flush or call an action that requires a flush it will (for example a native query).
 	    logger.info("Will it flush?");
 	}
 
 	@Test
 	@Transactional
-	@DisplayName("Test upserting values that violate unique constraint")
+	@DisplayName("Test safely upserting values that violate unique constraint.")
 	void testOnConflictInsert() {
 
 	    logger.info("Fetching stateless session handle");
@@ -137,7 +109,7 @@ class AccountTests {
 		    new Account("new_1", "pass", "player"),
 		    new Account("new_2", "pass", "player"),
 		    new Account("new_3", "pass", "player"),
-		    new Account("donkey_kong", "pass", "player")
+		    new Account("donkey_kong", "new_pass", "new_role")
 	    );
 
 	    logger.info("Creating the new accounts");
@@ -146,7 +118,9 @@ class AccountTests {
 			INSERT INTO Account (username, password, role)
 			VALUES (:username, :password, :role)
 			ON CONFLICT (username) DO UPDATE
-			SET password = :password
+			SET 
+			    password = :password,
+			    role = :role
 			""")
 		    .setParameter("username", a.username)
 		    .setParameter("password", a.password)
@@ -157,6 +131,9 @@ class AccountTests {
 
 	    logger.info("Fetching accounts");
 	    var allAccounts = accountRepository.findAll();
+	    var updatedAccount = accountRepository.findByUsername("donkey_kong");
+	    assert(updatedAccount.password == "new_pass");
+	    assert(updatedAccount.role == "new_role");
 	    
 	    allAccounts.forEach(a -> logger.info(a.toString()));
 	    logger.info("Finished testing upsert");

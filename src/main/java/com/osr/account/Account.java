@@ -56,11 +56,13 @@ public class Account {
     }
 
     @Override
-    public boolean equals(Object o) {
-	if ( this == o ) { return true; }
-	if (o == null || getClass() != o.getClass()) { return false; }
-	Account account = (Account) o;
-	return username != null ? username.equals(account.username) : account.username == null;
+    public boolean equals(Object other) {
+	return other instanceof Account && ((Account) other).username == this.username;
+    }
+
+    @Override
+    public int hashCode()	 {
+	return username.hashCode();
     }
 }
 
