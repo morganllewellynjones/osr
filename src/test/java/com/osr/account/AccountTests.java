@@ -72,6 +72,21 @@ class AccountTests {
 
 	@Test
 	@Transactional
+	@DisplayName("Test to observe the behavior of fetching associated entities.")
+	void testAssociationFetching() {
+	    // Note: If you change the association from account -> characters as an eager fetch type
+	    // Then you will see queries both to fetch the account and the characters when we get the characters
+	    logger.info("Fetching donkey_kong player account");
+	    var a = accountRepository.findByUsername("donkey_kong");
+	    logger.info(a.toString());
+
+	    logger.info("Fetching account characters");
+	    a.characters.forEach(c -> logger.info(c.toString()));
+
+	}
+
+	@Test
+	@Transactional
 	@DisplayName("Test to see that a newly created account is equal to an existing persistent account with the same name.")
 	void testEquality() {
 	    Account a = new Account("donkey_kong", "new_password", "new_role");
