@@ -78,9 +78,27 @@ class AccountTests {
 	    Account b = accountRepository.findByUsername("donkey_kong");
 	    logger.info(String.format("Does a = b? %b", a.equals(b)));
 	    assert(a.equals(b) == true);
+	}
 
-	    //accountRepository.saveAndFlush(a);
-	    //assert(b.password == "new_password");
+	@Test
+	@Transactional
+	@DisplayName("Test that hibernate properly detects a mutation to a persistent entity and flushes state without an explicity update.")
+	void testDirtyUpdate() {
+
+	    logger.info("Fetching first instance of donkey_kong");
+	    var a = accountRepository.findByUsername("donkey_kong");
+	    assert(a.password == "snowflake");
+	    logger.info("Fetching second instance of donkey_kong");
+	    var b = accountRepository.findByUsername("donkey_kong");
+	    logger.info("Changing password");
+	    b.password = "new_password";
+	    logger.info("Flushing state without explicitly updating the entity in the database");
+	    entityManager.flush();
+	    logger.info("Fetching same entity after a flush");
+	    var c = accountRepository.findByUsername("donkey_kong");
+	    logger.info("Checking that new reference to donkey_kong has the updated password");
+	    assert(c.password == "new_password");
+
 	}
 
 	@Test
