@@ -84,7 +84,6 @@ class AccountTests {
 	@Transactional
 	@DisplayName("Test that hibernate properly detects a mutation to a persistent entity and flushes state without an explicity update.")
 	void testDirtyUpdate() {
-
 	    logger.info("Fetching first instance of donkey_kong");
 	    var a = accountRepository.findByUsername("donkey_kong");
 	    assert(a.password == "snowflake");
@@ -98,7 +97,35 @@ class AccountTests {
 	    var c = accountRepository.findByUsername("donkey_kong");
 	    logger.info("Checking that new reference to donkey_kong has the updated password");
 	    assert(c.password == "new_password");
+	}
 
+	@Test
+	@Transactional
+	void testCompetingDirtyUpdates() {
+	    logger.info("Fetching first instance of donkey_kong");
+	    var a = accountRepository.findByUsername("donkey_kong");
+	    assert(a.password == "snowflake");
+	    assert(a.role == "player");
+
+	    logger.info("Changing password and role from first reference");
+	    a.password = "new_password";
+	    a.role = "new_role";
+	    logger.info("Fetching second instance of donkey_kong");
+
+	    var b = accountRepository.findByUsername("donkey_kong");
+
+	    logger.info("Overwriting new password from second reference");
+
+	    b.password = "other_new_password";
+	    
+	    logger.info("Flushing state without explicitly updating the entity in the database");
+	    entityManager.flush();
+	    
+	    logger.info("Fetching same entity after a flush");
+	    var c = accountRepository.findByUsername("donkey_kong");
+	    logger.info("Checking that new reference to donkey_kong has the updated password");
+	    assert(c.password == "other_new_password");
+	    assert(c.role == "new_role");
 	}
 
 	@Test
